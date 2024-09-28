@@ -1,14 +1,11 @@
-package org.dfproductions.budgetingserver.web;
+package org.dfproductions.budgetingserver.web.controllers;
 
-import org.dfproductions.budgetingserver.backend.PasswordManagement;
 import org.dfproductions.budgetingserver.backend.templates.User;
 import org.dfproductions.budgetingserver.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api")
@@ -33,13 +30,6 @@ public class GeneralController {
     public ResponseEntity<User> putNewUser(@RequestBody String name,
                                            @RequestBody String email,
                                            @RequestBody String password) {
-        try {
-            String[] passCombo = PasswordManagement.hashPassword(password).split(":");
-            User user = new User();
-        }catch (NoSuchAlgorithmException ex){
-            ex.printStackTrace();
-        }
-
         return null;
 
     }

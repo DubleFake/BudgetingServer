@@ -1,10 +1,22 @@
 package org.dfproductions.budgetingserver.backend.templates;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "passwords")
 public class Password {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String hash;
     private String salt;
     private int userId;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Password(String hash, String salt, int userId) {
         this.hash = hash;
@@ -13,6 +25,22 @@ public class Password {
     }
 
     public Password(){}
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getHash() {
         return hash;
