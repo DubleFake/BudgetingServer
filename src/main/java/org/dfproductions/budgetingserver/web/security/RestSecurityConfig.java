@@ -26,7 +26,8 @@ public class RestSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.POST, "/api/user").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/user/create").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/login").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .anyRequest().denyAll())
                 .httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);

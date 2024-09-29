@@ -1,12 +1,11 @@
 package org.dfproductions.budgetingserver.web.controllers;
 
-import org.dfproductions.budgetingserver.backend.UserRequest;
+import org.dfproductions.budgetingserver.backend.requests.PasswordRequest;
 import org.dfproductions.budgetingserver.backend.services.UserService;
-import org.dfproductions.budgetingserver.backend.templates.User;
 import org.dfproductions.budgetingserver.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,22 @@ public class GeneralController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     public GeneralController(){}
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @GetMapping("/login")
+    public ResponseEntity<String> validateUserPassword(@RequestBody PasswordRequest passwordRequest) {
+
+        if(userService.validatePassword(passwordRequest.getEmail(),passwordRequest.getPassword())) {
+           return new ResponseEntity<>("Granted.", HttpStatus.ACCEPTED);
+        }else{
+            return new ResponseEntity<>("Denied.", HttpStatus.FORBIDDEN);
+        }
+
+    }
 
     /*
     *
