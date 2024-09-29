@@ -2,22 +2,22 @@ package org.dfproductions.budgetingserver.backend.templates;
 
 import jakarta.persistence.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("ID")
     private int id;
 
+    @Column("Name")
     private String name;
+    @Column("Email")
     private String email;
+    @Column("PasswordID")
     private int passwordId;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Password password;
 
     public User(String name, String email, int passwordId){
         this.email = email;
@@ -27,14 +27,6 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Password getPassword() {
-        return password;
-    }
-
-    public void setPassword(Password password) {
-        this.password = password;
     }
 
     public User(){}

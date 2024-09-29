@@ -1,8 +1,11 @@
 package org.dfproductions.budgetingserver.web.controllers;
 
+import org.dfproductions.budgetingserver.backend.UserRequest;
+import org.dfproductions.budgetingserver.backend.services.UserService;
 import org.dfproductions.budgetingserver.backend.templates.User;
 import org.dfproductions.budgetingserver.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,24 +18,6 @@ public class GeneralController {
     private UserRepository userRepository;
 
     public GeneralController(){}
-
-    /*
-    *
-    * User-related operations
-    *
-    * */
-
-    @DeleteMapping("/user/delete/{username}")
-    public void deleteUser(@PathVariable String username){}
-
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/user")
-    public ResponseEntity<User> putNewUser(@RequestBody String name,
-                                           @RequestBody String email,
-                                           @RequestBody String password) {
-        return null;
-
-    }
 
     /*
     *

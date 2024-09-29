@@ -1,19 +1,27 @@
 package org.dfproductions.budgetingserver.backend.templates;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "records")
 public class Record {
 
     @Id
+    @Column("ID")
     private int id;
 
+    @Column("Category")
     private String category;
+    @Column("Date")
     private String date;
+    @Column("Price")
     private double price;
+    @Column("Place")
     private String place;
+    @Column("Note")
     private String note;
+    @Column("UserID")
     private int userId;
 
     public Record(String category, String date, double price, String place, String note, int userId){

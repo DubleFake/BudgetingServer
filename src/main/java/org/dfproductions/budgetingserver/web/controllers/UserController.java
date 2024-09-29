@@ -6,17 +6,19 @@ import org.dfproductions.budgetingserver.backend.templates.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
 @RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping()
     public ResponseEntity<User> createUser(@RequestBody UserRequest userRequest) {
+
         try {
             User savedUser = userService.createUser(
                     userRequest.getName(),
@@ -28,5 +30,7 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
+
 }

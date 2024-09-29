@@ -1,26 +1,26 @@
 package org.dfproductions.budgetingserver.backend.templates;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
 @Table(name = "passwords")
 public class Password {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("ID")
     private int id;
 
-    private String hash;
-    private String salt;
+    @Column("PasswordHash")
+    private String passwordHash;
+    @Column("PasswordSalt")
+    private String passwordSalt;
+    @Column("UserID")
     private int userId;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    public Password(String hash, String salt, int userId) {
-        this.hash = hash;
-        this.salt = salt;
+    public Password(String passwordHash, String passwordSalt, int userId) {
+        this.passwordHash = passwordHash;
+        this.passwordSalt = passwordSalt;
         this.userId = userId;
     }
 
@@ -34,28 +34,20 @@ public class Password {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
-    public String getHash() {
-        return hash;
+    public String getPasswordSalt() {
+        return passwordSalt;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setPasswordSalt(String passwordSalt) {
+        this.passwordSalt = passwordSalt;
     }
 
     public int getUserId() {

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS passwords (
 
 -- Step 4: Modify the users table to reference PasswordID
 ALTER TABLE users
-    ADD PasswordID INT NOT NULL,
+    ADD PasswordID INT NULL,
     ADD CONSTRAINT unique_passwordid UNIQUE (PasswordID),  -- Ensure each user has only one password ID
     ADD CONSTRAINT fk_password FOREIGN KEY (PasswordID) REFERENCES passwords(ID) ON DELETE CASCADE ON UPDATE CASCADE;
 
