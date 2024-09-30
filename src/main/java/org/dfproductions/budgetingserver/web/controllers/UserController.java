@@ -1,5 +1,6 @@
 package org.dfproductions.budgetingserver.web.controllers;
 
+import org.dfproductions.budgetingserver.backend.requests.PasswordRequest;
 import org.dfproductions.budgetingserver.backend.requests.UserRequest;
 import org.dfproductions.budgetingserver.backend.services.UserService;
 import org.dfproductions.budgetingserver.backend.templates.User;
@@ -15,7 +16,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
 
@@ -35,6 +35,26 @@ public class UserController {
             return new ResponseEntity<>("Denied.", HttpStatus.FORBIDDEN);
         }
 
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<String> validateUserPassword(@RequestBody PasswordRequest passwordRequest) {
+
+        if(userService.validatePassword(passwordRequest.getEmail(),passwordRequest.getPassword())) {
+            return new ResponseEntity<>("Granted.", HttpStatus.ACCEPTED);
+        }else{
+            return new ResponseEntity<>("Denied.", HttpStatus.FORBIDDEN);
+        }
+
+    }
+
+    @DeleteMapping("/delete/{email}")
+    public ResponseEntity<String> deleteUser(@PathVariable String email){
+
+        if(userService.deleteUser(email))
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        else
+            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
     }
 
     }

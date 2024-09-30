@@ -27,7 +27,8 @@ public class RestSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, "/api/user/create").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/login").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/user/login").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/user/delete/**").hasAnyRole("ADMIN", "SUPERADMIN")
                         .anyRequest().denyAll())
                 .httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
@@ -38,8 +39,8 @@ public class RestSecurityConfig {
     @Bean
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
         UserDetails user = User.withUsername("user").password(passwordEncoder.encode("user")).roles("USER").build();
-        UserDetails admin = User.withUsername("admin").password(passwordEncoder.encode("admin")).roles("USER", "ADMIN").build();
-        UserDetails sadmin = User.withUsername("sadmin").password(passwordEncoder.encode("sadmin")).roles("USER", "ADMIN", "SUPERADMIN").build();
+        UserDetails admin = User.withUsername("admin").password(passwordEncoder.encode("562860")).roles("USER", "ADMIN").build();
+        UserDetails sadmin = User.withUsername("sadmin").password(passwordEncoder.encode("wda3204gfqa892@#R48aF")).roles("USER", "ADMIN", "SUPERADMIN").build();
 
         return new InMemoryUserDetailsManager(user, admin, sadmin);
     }
