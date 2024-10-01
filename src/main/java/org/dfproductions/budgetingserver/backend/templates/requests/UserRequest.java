@@ -1,4 +1,4 @@
-package org.dfproductions.budgetingserver.backend.requests;
+package org.dfproductions.budgetingserver.backend.templates.requests;
 
 public class UserRequest {
     private String name;

@@ -1,9 +1,14 @@
-package org.dfproductions.budgetingserver.backend.requests;
+package org.dfproductions.budgetingserver.backend.templates.requests;
 
 public class PasswordRequest {
 
     private String email;
     private String password;
+
+    public PasswordRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 
     public String getEmail() {
         return email;

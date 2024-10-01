@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -25,6 +26,9 @@ public class UserService {
 
     @Transactional
     public User createUser(String name, String email, String passwordHash, String passwordSalt) {
+
+        if(name.isEmpty() || email.isEmpty() || passwordHash.isEmpty() || passwordSalt.isEmpty())
+            return null;
 
         // Step 1: Insert User (without PasswordID)
         KeyHolder userKeyHolder = new GeneratedKeyHolder();
@@ -45,7 +49,7 @@ public class UserService {
         if(creationResult) {
             return jdbcTemplate.queryForObject("SELECT * FROM users WHERE ID = ?", new UserRowMapper(), userId);
         }else{
-            return new User();
+            return null;
         }
     }
 
@@ -80,8 +84,11 @@ public class UserService {
     public boolean validatePassword(String email, String password) {
 
         try {
-            PasswordInfo pi =  jdbcTemplate.queryForObject("SELECT PasswordHash, PasswordSalt FROM passwords AS p LEFT JOIN users AS u ON p.UserID = u.ID WHERE email = ?;", new PasswordInfoRowMapper(), email);
-            String passwordHash = pi.getPasswordSalt() + ":" + pi.getPasswordHash();
+
+            List<PasswordInfo> pi =  jdbcTemplate.query("SELECT PasswordHash, PasswordSalt FROM passwords AS p LEFT JOIN users AS u ON p.UserID = u.ID WHERE email = ?;", new PasswordInfoRowMapper(), email);
+            if(pi.isEmpty())
+                return false;
+            String passwordHash = pi.get(0).getPasswordSalt() + ":" + pi.get(0).getPasswordHash();
             return PasswordHashing.verifyPassword(password, passwordHash);
 
 
@@ -96,14 +103,15 @@ public class UserService {
     public boolean deleteUser(String email) {
 
         try{
-            jdbcTemplate.update(connection -> {
+            int rowsAffected = jdbcTemplate.update(connection -> {
                PreparedStatement ps = connection.prepareStatement(
                  "DELETE FROM users WHERE email=?");
                ps.setString(1, email);
                return ps;
             });
 
-            return true;
+
+            return rowsAffected > 0;
 
         }catch (Exception ex) {
             ex.printStackTrace();

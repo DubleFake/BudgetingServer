@@ -1,7 +1,7 @@
 package org.dfproductions.budgetingserver.web.controllers;
 
-import org.dfproductions.budgetingserver.backend.requests.PasswordRequest;
-import org.dfproductions.budgetingserver.backend.requests.UserRequest;
+import org.dfproductions.budgetingserver.backend.templates.requests.PasswordRequest;
+import org.dfproductions.budgetingserver.backend.templates.requests.UserRequest;
 import org.dfproductions.budgetingserver.backend.services.UserService;
 import org.dfproductions.budgetingserver.backend.templates.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,18 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<String> createUser(@RequestBody UserRequest userRequest) {
 
+        User savedUser;
         try {
-            User savedUser = userService.createUser(
+            savedUser = userService.createUser(
                     userRequest.getName(),
                     userRequest.getEmail(),
                     userRequest.getPasswordHash(),
                     userRequest.getPasswordSalt()
+
             );
+            if(savedUser == null)
+                return new ResponseEntity<>("Bad data.", HttpStatus.BAD_REQUEST);
+
             return new ResponseEntity<>("User created.", HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,9 +57,9 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable String email){
 
         if(userService.deleteUser(email))
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("Deleted.", HttpStatus.NO_CONTENT);
         else
-            return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
     }
