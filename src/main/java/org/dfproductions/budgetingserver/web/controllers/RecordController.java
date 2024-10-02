@@ -2,7 +2,6 @@ package org.dfproductions.budgetingserver.web.controllers;
 
 import org.dfproductions.budgetingserver.backend.services.RecordService;
 import org.dfproductions.budgetingserver.backend.templates.Record;
-import org.dfproductions.budgetingserver.backend.templates.User;
 import org.dfproductions.budgetingserver.backend.templates.requests.RecordRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,18 +32,20 @@ public class RecordController {
 
             return new ResponseEntity<>("Record created.", HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>("Denied.", HttpStatus.FORBIDDEN);
         }
     }
 
-    @GetMapping("/get/{email}/{date}")
+    @GetMapping("/get/{date}")
     @ResponseBody
-    public ResponseEntity<List<RecordRequest>> getAllRecordsForPeriod(@PathVariable String email, @PathVariable String date) {
+    public ResponseEntity<List<RecordRequest>> getAllRecordsForPeriod(@RequestBody String email, @PathVariable String date) {
 
         List<RecordRequest> recordRequests = new ArrayList<>();
         List<Record> records = recordService.getRecordsForPeriod(date);
 
         for(Record record : records){
+            record.setUserId(-1);
             recordRequests.add(new RecordRequest(record, email));
         }
 

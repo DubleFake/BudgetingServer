@@ -48,7 +48,7 @@ public class Record {
     }
 
     public void setCategory(String category) {
-        category = category;
+        this.category = category;
     }
 
     public String getDate() {
