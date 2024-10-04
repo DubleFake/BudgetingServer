@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS records (
     Date VARCHAR(50) NOT NULL,
     Price DOUBLE NOT NULL,
     Place VARCHAR(256) NOT NULL,
+    Type VARCHAR(50) NOT NULL,
     Note TEXT,  -- TEXT type for large text storage
     UserID INT NOT NULL,  -- Reference to users table
     PRIMARY KEY (ID),

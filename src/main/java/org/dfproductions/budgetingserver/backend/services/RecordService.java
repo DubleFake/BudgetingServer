@@ -32,13 +32,14 @@ public class RecordService {
         KeyHolder recordKeyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO records (Category, Date, Price, Place, Note, UserID) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    "INSERT INTO records (Category, Date, Price, Place, Note, UserID, Type) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, record.getCategory());
             ps.setString(2, record.getDate());
             ps.setDouble(3, record.getPrice());
             ps.setString(4, record.getPlace());
             ps.setString(5, record.getNote());
             ps.setInt(6, id);
+            ps.setString(7, record.getType());
             return ps;
         }, recordKeyHolder);
 
@@ -49,8 +50,14 @@ public class RecordService {
     }
 
     @Transactional
-    public List<Record> getRecordsForPeriod(String date) {
-        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date LIKE '" + date +"%'", new RecordRowMapper());
+    public List<Record> getRecordsForDate(String date) {
+        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date LIKE '" + date +"%'", new RecordRowMapper());
+    }
+
+    @Transactional
+    public List<Record> getRecordsForDateRange(String startDate, String endDate) {
+        System.out.println(startDate +"-"+ endDate);
+        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date >= ? AND Date <= ?", new RecordRowMapper(), startDate+"01", endDate+"31");
     }
 
 

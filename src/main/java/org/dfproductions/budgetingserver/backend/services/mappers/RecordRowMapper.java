@@ -17,6 +17,7 @@ public class RecordRowMapper implements RowMapper<Record> {
         record.setPlace(rs.getString("Place"));
         record.setPrice(rs.getDouble("Price"));
         record.setUserId(rs.getInt("UserID"));
+        record.setType(rs.getString("Type"));
         return record;
     }
 }

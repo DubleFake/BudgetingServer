@@ -41,8 +41,18 @@ public class RecordController {
     @ResponseBody
     public ResponseEntity<List<RecordRequest>> getAllRecordsForPeriod(@RequestBody String email, @PathVariable String date) {
 
+        List<Record> records;
+
+        if(date.contains("-")) {
+            String[] dates = date.split("-");
+            records = recordService.getRecordsForDateRange(dates[0], dates[1]);
+        }
+        else{
+            records = recordService.getRecordsForDate(date);
+        }
+
         List<RecordRequest> recordRequests = new ArrayList<>();
-        List<Record> records = recordService.getRecordsForPeriod(date);
+
 
         for(Record record : records){
             record.setUserId(-1);

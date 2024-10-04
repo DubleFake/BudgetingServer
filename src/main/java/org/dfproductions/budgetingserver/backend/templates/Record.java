@@ -11,6 +11,8 @@ public class Record {
     @Column("ID")
     private int id;
 
+    @Column("Type")
+    private String type;
     @Column("Category")
     private String category;
     @Column("Date")
@@ -24,16 +26,25 @@ public class Record {
     @Column("UserID")
     private int userId;
 
-    public Record(String category, String date, double price, String place, String note, int userId){
+    public Record(String category, String date, double price, String place, String note, int userId, String type) {
         this.category = category;
         this.date = date;
         this.price = price;
         this.place = place;
         this.note = note;
         this.userId = userId;
+        this.type = type;
     }
 
     public Record(){}
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public int getId() {
         return id;
