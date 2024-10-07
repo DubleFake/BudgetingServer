@@ -63,12 +63,28 @@ public class RecordController {
 
     }
 
-    @DeleteMapping("/record/delete/{ID}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteRecord(@PathVariable int id){
         if(recordService.deleteRecord(id))
             return new ResponseEntity<>("Deleted.", HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> updateRecord(@RequestBody Record record){
+        Record updatedRecord;
+        try {
+            updatedRecord = recordService.updateRecord(record);
+
+            if(updatedRecord == null)
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+            return new ResponseEntity<>("Record updated.", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Denied.", HttpStatus.FORBIDDEN);
+        }
     }
 
 }

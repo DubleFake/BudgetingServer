@@ -60,7 +60,6 @@ public class RecordService {
         return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date >= ? AND Date <= ?", new RecordRowMapper(), startDate+"01", endDate+"31");
     }
 
-
     @Transactional
     public boolean deleteRecord(int id){
 
@@ -80,6 +79,29 @@ public class RecordService {
             return false;
         }
 
+    }
+
+    @Transactional
+    public Record updateRecord(Record record) {
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(
+                        "UPDATE records SET Type = ?, Category = ?, Date = ?, Price = ?, Place = ?, Note = ? WHERE ID = ?");
+                ps.setString(1, record.getType());
+                ps.setString(2, record.getCategory());
+                ps.setString(3, record.getDate());
+                ps.setDouble(4, record.getPrice());
+                ps.setString(5, record.getPlace());
+                ps.setString(6, record.getNote());
+                ps.setInt(7, record.getId());
+                return ps;
+            });
+
+            return record;
+        }catch (Exception ex){
+
+            return null;
+        }
     }
 
 }

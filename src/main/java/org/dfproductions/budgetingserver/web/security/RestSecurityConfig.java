@@ -29,9 +29,10 @@ public class RestSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/user/create").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/user/login").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/user/delete/**").hasAnyRole("ADMIN", "SUPERADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/record/delete/**").hasAnyRole("ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/record/delete/**").hasAnyRole("USER","ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/record/get/**").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/record/create").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/record/update").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .anyRequest().denyAll())
                 .httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
