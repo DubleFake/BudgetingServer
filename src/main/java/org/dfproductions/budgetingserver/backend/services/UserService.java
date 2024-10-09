@@ -1,12 +1,12 @@
 package org.dfproductions.budgetingserver.backend.services;
 
-import org.dfproductions.budgetingserver.backend.PasswordHashing;
+import org.dfproductions.budgetingserver.backend.EmailService;
+import org.dfproductions.budgetingserver.backend.PasswordHandler;
 import org.dfproductions.budgetingserver.backend.services.mappers.PasswordInfoRowMapper;
 import org.dfproductions.budgetingserver.backend.services.mappers.UserRowMapper;
 import org.dfproductions.budgetingserver.backend.templates.PasswordInfo;
 import org.dfproductions.budgetingserver.backend.templates.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,6 +23,9 @@ public class UserService {
 
     @Autowired
     JdbcTemplate jdbcTemplate = new JdbcTemplate();
+
+    @Autowired
+    private EmailService emailService;
 
     @Transactional
     public User createUser(String name, String email, String passwordHash, String passwordSalt) {
@@ -89,7 +92,7 @@ public class UserService {
             if(pi.isEmpty())
                 return false;
             String passwordHash = pi.get(0).getPasswordSalt() + ":" + pi.get(0).getPasswordHash();
-            return PasswordHashing.verifyPassword(password, passwordHash);
+            return PasswordHandler.verifyPassword(password, passwordHash);
 
 
         }catch (NoSuchAlgorithmException ex){
@@ -101,9 +104,9 @@ public class UserService {
 
     @Transactional
     public boolean deleteUser(String email) {
-
+        int rowsAffected = 0;
         try{
-            int rowsAffected = jdbcTemplate.update(connection -> {
+            rowsAffected = jdbcTemplate.update(connection -> {
                PreparedStatement ps = connection.prepareStatement(
                  "DELETE FROM users WHERE email=?");
                ps.setString(1, email);
@@ -118,6 +121,19 @@ public class UserService {
             return false;
         }
 
+    }
+
+    @Transactional
+    public void attemptRecovery(String email) throws NoSuchAlgorithmException {
+
+        Integer userId = jdbcTemplate.queryForObject("SELECT ID FROM users WHERE email = ?", Integer.class, email);
+
+        if(userId != null && userId > 0) {
+            String tempPass = PasswordHandler.generatePassword(20);
+            String[] hashedPass = PasswordHandler.hashPassword(tempPass).split(":");
+            createPassword(userId,hashedPass[1],hashedPass[0]);
+            emailService.sendRecoveryEmail(email, tempPass);
+        }
     }
 
 }

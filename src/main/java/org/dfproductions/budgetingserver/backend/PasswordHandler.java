@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class PasswordHashing {
+public class PasswordHandler {
 
     // Method to hash the password with a generated salt and return both as a single string
     public static String hashPassword(String password) throws NoSuchAlgorithmException {
@@ -73,6 +73,43 @@ public class PasswordHashing {
 
         // Compare the hashes
         return MessageDigest.isEqual(hashedPassword, storedHashedPassword);
+    }
+
+    public static String generatePassword(int length) {
+
+        SecureRandom random = new SecureRandom();
+        String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String LOWER = "abcdefghijklmnopqrstuvwxyz";
+        String DIGITS = "0123456789";
+        String SPECIAL = "!@#$%^&*()-_+=<>?/{}~|";
+        String ALL = UPPER + LOWER + DIGITS + SPECIAL;
+
+        StringBuilder password = new StringBuilder(length);
+
+        // Ensure at least one character from each category
+        password.append(UPPER.charAt(random.nextInt(UPPER.length())));
+        password.append(LOWER.charAt(random.nextInt(LOWER.length())));
+        password.append(DIGITS.charAt(random.nextInt(DIGITS.length())));
+        password.append(SPECIAL.charAt(random.nextInt(SPECIAL.length())));
+
+        // Fill the remaining characters randomly from all categories
+        for (int i = 4; i < length; i++) {
+            password.append(ALL.charAt(random.nextInt(ALL.length())));
+        }
+
+        // Shuffle to avoid predictable patterns (optional but recommended)
+        return shuffleString(password.toString(), random);
+    }
+
+    private static String shuffleString(String input, SecureRandom random) {
+        char[] characters = input.toCharArray();
+        for (int i = 0; i < characters.length; i++) {
+            int randomIndex = random.nextInt(characters.length);
+            char temp = characters[i];
+            characters[i] = characters[randomIndex];
+            characters[randomIndex] = temp;
+        }
+        return new String(characters);
     }
 
 }

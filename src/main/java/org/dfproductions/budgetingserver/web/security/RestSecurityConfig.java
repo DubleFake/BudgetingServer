@@ -5,9 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2ClientConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,6 +35,7 @@ public class RestSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/record/get/**").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/record/create").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/record/update").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/user/recovery/**").hasAnyRole("USER", "ADMIN", "SUPERADMIN")
                         .anyRequest().denyAll())
                 .httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);

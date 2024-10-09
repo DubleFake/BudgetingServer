@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -60,6 +62,16 @@ public class UserController {
             return new ResponseEntity<>("Deleted.", HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/recovery/{email}")
+    public ResponseEntity<String> recoveryRequest(@PathVariable String email) {
+        try {
+            userService.attemptRecovery(email);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(null, HttpStatus.ACCEPTED);
     }
 
     }
