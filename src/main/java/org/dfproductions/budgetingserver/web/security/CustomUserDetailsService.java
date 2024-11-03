@@ -1,10 +1,16 @@
 package org.dfproductions.budgetingserver.web.security;
 
+import org.dfproductions.budgetingserver.backend.repositories.PasswordRepository;
+import org.dfproductions.budgetingserver.backend.repositories.UserRepository;
+import org.dfproductions.budgetingserver.backend.templates.Password;
+import org.dfproductions.budgetingserver.backend.templates.User;
+import org.dfproductions.budgetingserver.web.security.jwt.JwtRequestFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -12,37 +18,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordRepository passwordRepository;
 
-    public CustomUserDetailsService(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    @Autowired
+    public CustomUserDetailsService(UserRepository userRepository, PasswordRepository passwordRepository) {
+        this.userRepository = userRepository;
+        this.passwordRepository = passwordRepository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // Fetch user from the database
+        User user = userRepository.findByEmail(email);
 
-        User.UserBuilder builder = User.builder();
-        builder.username(username);
-        builder.password(passwordEncoder.encode(username));
+        // Retrieve the password using passwordId
+        Password password = passwordRepository.findPasswordById(user.getPasswordId());
 
-        switch (username){
-
-            case "user":
-                builder.roles("USER");
-                break;
-            case "admin":
-                builder.roles("USER","ADMIN");
-                break;
-            case "sadmin":
-                builder.roles("USER","ADMIN","SUPERADMIN");
-                break;
-            default:
-                throw new UsernameNotFoundException("User not found.");
-
-        }
-
-        return builder.build();
-
+        // Create a UserDetails object without exposing the password directly
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),        // Using email as the username
+                password.getPasswordHash(), // Return password hash for internal use
+                true,                  // account is enabled
+                true,                  // account is non-expired
+                true,                  // credentials are non-expired
+                true,                  // account is non-locked
+                user.getAuthorities()   // Fetch user's roles/authorities
+        );
     }
 
 }

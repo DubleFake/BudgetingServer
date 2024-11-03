@@ -10,12 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -84,38 +88,44 @@ public class UserService {
     }
 
     @Transactional
-    public boolean validatePassword(String email, String password) {
+    public String getPasswordHash(String email, String password) {
 
         try {
 
             List<PasswordInfo> pi =  jdbcTemplate.query("SELECT PasswordHash, PasswordSalt FROM passwords AS p LEFT JOIN users AS u ON p.UserID = u.ID WHERE email = ?;", new PasswordInfoRowMapper(), email);
             if(pi.isEmpty())
-                return false;
+                return "";
             String passwordHash = pi.get(0).getPasswordSalt() + ":" + pi.get(0).getPasswordHash();
-            return PasswordHandler.verifyPassword(password, passwordHash);
+            if(PasswordHandler.verifyPassword(password, passwordHash)) {
+                return pi.get(0).getPasswordHash();
+            }
 
 
         }catch (NoSuchAlgorithmException ex){
             ex.printStackTrace();
-            return false;
         }
+
+        return "";
 
     }
 
     @Transactional
-    public boolean deleteUser(String email) {
+    public boolean deleteUser(String email, Authentication authentication) {
         int rowsAffected = 0;
         try{
-            rowsAffected = jdbcTemplate.update(connection -> {
-               PreparedStatement ps = connection.prepareStatement(
-                 "DELETE FROM users WHERE email=?");
-               ps.setString(1, email);
-               return ps;
-            });
+            if(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+                rowsAffected = jdbcTemplate.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(
+                            "DELETE FROM users WHERE email=?");
+                    ps.setString(1, email);
+                    return ps;
+                });
 
 
-            return rowsAffected > 0;
-
+                return rowsAffected > 0;
+            }else {
+                return false;
+            }
         }catch (Exception ex) {
             ex.printStackTrace();
             return false;

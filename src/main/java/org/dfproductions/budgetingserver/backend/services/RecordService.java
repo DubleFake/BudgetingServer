@@ -50,24 +50,30 @@ public class RecordService {
     }
 
     @Transactional
-    public List<Record> getRecordsForDate(String date) {
-        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date LIKE '" + date +"%'", new RecordRowMapper());
+    public List<Record> getRecordsForDate(String date, String email) {
+        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date LIKE '" + date +"%' AND u.ID = ?",
+                new RecordRowMapper(),
+                jdbcTemplate.queryForObject("SELECT ID FROM users WHERE email = ?", Integer.class, email));
     }
 
     @Transactional
-    public List<Record> getRecordsForDateRange(String startDate, String endDate) {
-        System.out.println(startDate +"-"+ endDate);
-        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date >= ? AND Date <= ?", new RecordRowMapper(), startDate+"01", endDate+"31");
+    public List<Record> getRecordsForDateRange(String startDate, String endDate, String email) {
+        return jdbcTemplate.query("SELECT r.ID, Category, Date, Price, Place, Note, UserID, Type FROM records as r LEFT JOIN users AS u ON r.UserID = u.ID WHERE Date >= ? AND Date <= ? AND u.ID = ?",
+                new RecordRowMapper(),
+                startDate+"01",
+                endDate+"31",
+                jdbcTemplate.queryForObject("SELECT ID FROM users WHERE email = ?", Integer.class, email));
     }
 
     @Transactional
-    public boolean deleteRecord(int id){
+    public boolean deleteRecord(int id, String email){
 
         try{
             int rowsAffected = jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(
-                        "DELETE FROM records WHERE ID=?");
+                        "DELETE FROM records WHERE ID=? AND UserID=?");
                 ps.setInt(1, id);
+                ps.setInt(2, jdbcTemplate.queryForObject("SELECT ID FROM users WHERE email=?", Integer.class, email));
                 return ps;
             });
 
@@ -82,11 +88,11 @@ public class RecordService {
     }
 
     @Transactional
-    public Record updateRecord(Record record) {
+    public Record updateRecord(Record record, String email) {
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(
-                        "UPDATE records SET Type = ?, Category = ?, Date = ?, Price = ?, Place = ?, Note = ? WHERE ID = ?");
+                        "UPDATE records SET Type = ?, Category = ?, Date = ?, Price = ?, Place = ?, Note = ? WHERE ID = ? AND UserID = ?");
                 ps.setString(1, record.getType());
                 ps.setString(2, record.getCategory());
                 ps.setString(3, record.getDate());
@@ -94,6 +100,7 @@ public class RecordService {
                 ps.setString(5, record.getPlace());
                 ps.setString(6, record.getNote());
                 ps.setInt(7, record.getId());
+                ps.setInt(8, jdbcTemplate.queryForObject("SELECT ID FROM users WHERE email=?", Integer.class, email));
                 return ps;
             });
 

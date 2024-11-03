@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     ID INT NOT NULL AUTO_INCREMENT,
     Name VARCHAR(256),
     Email VARCHAR(256) NOT NULL,
+    Role VARCHAR(256) NOT NULL,
     PRIMARY KEY (ID),
     CONSTRAINT unique_email UNIQUE (Email)  -- Ensure email is unique
 );

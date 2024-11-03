@@ -5,12 +5,12 @@ import org.dfproductions.budgetingserver.backend.templates.Record;
 public class RecordRequest {
 
     private Record record;
-    private String email;
 
-    public RecordRequest(Record record, String email) {
+    public RecordRequest(Record record) {
         this.record = record;
-        this.email = email;
     }
+
+    public RecordRequest() {}
 
     public Record getRecord() {
         return record;
@@ -18,13 +18,5 @@ public class RecordRequest {
 
     public void setRecord(Record record) {
         this.record = record;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 }

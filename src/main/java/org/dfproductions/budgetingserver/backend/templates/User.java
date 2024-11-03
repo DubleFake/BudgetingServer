@@ -1,9 +1,13 @@
 package org.dfproductions.budgetingserver.backend.templates;
 
-import jakarta.persistence.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Table(name = "users")
 public class User {
@@ -18,11 +22,21 @@ public class User {
     private String email;
     @Column("PasswordID")
     private int passwordId;
+    @Column("Role")
+    private String role;
 
     public User(String name, String email, int passwordId){
         this.email = email;
         this.passwordId = passwordId;
         this.name = name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setId(int id) {
@@ -57,6 +71,11 @@ public class User {
 
     public void setPasswordId(int passwordId) {
         this.passwordId = passwordId;
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Convert the role string into a GrantedAuthority object
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
 }
